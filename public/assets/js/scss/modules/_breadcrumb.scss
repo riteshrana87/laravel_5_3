@@ -1,0 +1,18 @@
+.breadcrumb {display: none;}
+@media (min-width: 650px) {
+	.breadcrumb {margin: 0 0 30px; padding: 0 35px; border: $def_border; color: $dark_text; line-height: 20px;
+		p {margin: 0; padding: 18px 0;}
+		.info {color: $navy;}
+		.fa {padding: 0 15px; color: #cdcece; font-size: 0.66em}
+		a {color: $light_text;}
+		a:first-child {color: $navy;}
+		a:hover {color: #6B6B6B;}
+	}	
+}
+
+@media (min-width: 900px) {
+	.breadcrumb {
+		.info {float: right;}
+		.path {float: left;}
+	}
+}

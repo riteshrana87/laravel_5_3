@@ -1,0 +1,17 @@
+.banner {margin: 0; padding: 0; background: #fff;
+	.box {max-width: 1230px; margin: 0 auto; box-sizing: border-box;}
+	.slogan {margin: 0 0 25px; border-bottom: 5px solid $orange; color: $dark_text; font-size: 16px; font-weight: 600; line-height: 1.75em; text-transform: uppercase; text-align: center;}
+	.more {margin: 20px 0 0; text-align: center;
+		a {display: inline-block; width: 160px; height: 44px; border: $def_border; font-weight: 700; line-height: 44px; text-align: center; text-transform: uppercase;}
+		a:hover {background: $navy; color: #fff;}
+	}
+}
+
+@media (min-width: 1150px) {
+	.banner {
+		.box {background: url("../img/banner-photo.jpg") 100% 35px no-repeat;}
+		.slogan {margin: 35px 0 25px; max-width: 48%; font-size: 27px; text-align: left;}
+		.slogan:before {display: block; width: 60px; height: 50px; margin-bottom: 10px; background: url("../img/sprite.png") -170px 0; content: " ";}
+		.more {text-align: left;}
+	}
+}

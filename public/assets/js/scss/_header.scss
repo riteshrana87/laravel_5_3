@@ -1,0 +1,90 @@
+.page-header {position: relative; z-index: 100; padding: 10px 10px 10px; background: #fff; text-align: center;}
+.header-content {max-width: 1160px; margin: 0 auto;}
+.logo {margin: 0 0 5px; color: $light_text; font-size: 12px;
+	.title { display: block; font-size: 20px; line-height: 1em;
+		a {color: $dark_text;
+			i {color: #1a528b; font-style: normal;}
+		}
+		a:hover {color: #1a528b;
+			i {color: $dark_text;}
+		}
+	}
+	.tagline {display: none;}
+}
+
+.utils {margin: 0 10px; text-align: center; font-size: 0;}
+.utility {display: inline-block; height: 30px; margin: 5px 10px; padding: 0; border: $def_border; vertical-align: top;}
+
+.utility.social {list-style: none;
+	li {display: inline-block; border-left: $def_border;
+		a {display: block; width: 30px; height: 30px; background: #fff; color: #e1e1e1; font-size: 14px; line-height: 30px; text-align: center;}
+		a:hover {background: #f7f8f9; color: #1a528b;}
+	}
+	li:first-child {border: none;}
+}
+
+.currency-list li {}
+.utility.currency {position: relative; background: #f7f8f9; transition: $def_transition;
+	.currency-chosen {margin: 0;
+		.currency-symbol, .currency-toggle {display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; vertical-align: top;}
+		.currency-symbol {color: #1a528b; font-size: 16px;}
+		.currency-toggle {position: relative; z-index: 2; border-left: $def_border; background: #f7f8f9; color: $dark_text; font-size: 12px;}
+		.currency-toggle:hover {background: #e1e1e1;}
+	}
+	.currency-list {position: absolute; right: 1px; top: 30px; z-index: 1; width: 30px; height: 0; margin: 0; padding: 0; list-style: none; transition: height 0.3s;
+		li {display: block; overflow: hidden; width: 30px; height: 0; margin: 0; padding: 0; border: $def_border; border-width: 0 1px; background: #f7f8f9; color: #1a528b; font-size: 14px; line-height: 30px; text-align: center; cursor: pointer; transition: $def_transition;}
+		li:hover, li.current {background: #e1e1e1;}
+	}
+}
+
+.utility.currency:hover {
+	.currency-list {
+		li {height: 30px; border-width: 0 1px 1px;}
+	}
+	.currency-toggle {background: #e1e1e1;}
+}
+
+.utility.user-links {height: 32px; border: none; 
+	a {display: inline-block; height: 32px; padding: 0 20px; background: $navy; color: #fff; font-size: 14px; font-weight: 700; line-height: 32px; text-transform: uppercase;}
+	a:hover {background: #6087AE;}
+	a.cta {background: $dark_text;}
+	a.cta:hover {background: #747474;}	
+}
+
+@media (min-width: 1000px) {
+	.page-header {padding: 25px 10px;
+		.tagline {display: block;}
+	}
+	.logo {float: left; margin: 0; font-size: 15px; text-align: left;
+		.title {font-size: 30px;}
+	}
+	.utils {float: right; margin: 0; text-align: right;}
+	.utility {height: 44px; margin: 0 0 0 20px;}
+
+	.utility.social {list-style: none;
+		li {
+			a {width: 44px; height: 44px; font-size: 18px; line-height: 44px;}
+		}
+	}
+
+	.utility.currency {
+		.currency-chosen {
+			.currency-symbol, .currency-toggle {width: 44px; height: 44px; line-height: 44px;}
+			.currency-symbol {font-size: 16px;}
+		}
+		.currency-list {top: 44px; width: 44px;
+			li {width: 44px; font-size: 14px; line-height: 44px;}
+		}
+	}
+
+	.utility.currency:hover {
+		.currency-list {
+			li {height: 44px;}
+		}
+	}
+
+	.utility.user-links {height: 46px;
+		a {height: 46px; line-height: 46px;}
+	}
+
+}

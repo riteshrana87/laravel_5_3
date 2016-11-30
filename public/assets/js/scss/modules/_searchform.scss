@@ -1,0 +1,137 @@
+$blue: #557ea9;
+
+.searchform {padding: 15px 10px; background: $navy; color: #fff; font-size: 14px;
+	.field label, label {margin: 0 0 5px; color: #fff; font-weight: 400;}
+	input {height: 44px; border-color: #fff; border-radius: 0; background: #fff; line-height: 44px;}
+	input[type="checkbox"]:checked + label {color: #fff;}
+	input[type="checkbox"] + label:before {border-color: $blue; transition: $def_transition;}
+	input[type="checkbox"]:checked + label:before {color: #fff; content: $x;}
+	input[type="checkbox"] + label:hover:before {border-color: #fff;}
+	input[type="radio"]:checked + label {color: #fff;}
+	input[type="radio"] + label:before {border-color: $blue; transition: $def_transition;}
+	input[type="radio"]:checked + label:before {color: #fff; content: $dot;}
+	input[type="radio"] + label:hover:before {border-color: #fff;}
+	p.field {margin: 0 0 15px;}
+	p.field.check {margin: 20px 0;}
+	p.submit {margin: 20px 0 0;
+		button {width: 100%; background: $orange;}
+		button:hover {background: #fff; color: $navy;}
+	}
+	.select {padding-right: 60px; border-color: $blue; border-width: 1px;
+		.val {color: #5e97cb;}
+	}
+	.select.date {height: 46px; padding-right: 35px;box-sizing: border-box;}
+	
+	.select:after, .select:hover:after {display: inline-block; color: $blue; width: 44px; height: 100%; border-left: 1px solid $blue; content: $arrowDown; transition: $def_transition;}
+	.select:hover:after {border-color: #fff;}
+	.select:hover {border-color: #fff; background: #fff;}
+	.select.date:after {width: 35px; border-left: none;}
+	.guests .select {width: 100%; box-sizing: border-box;}
+	.select-set {
+		.calendar {display: inline-block; vertical-align: top; position: relative; z-index: 210; overflow: hidden; width: 46px; height: 46px; border: 1px solid $blue; background: url("../img/sprite.png") -129px 0; font-size: 0; text-indent: 100%; white-space: nowrap; transition: $def_transition;}
+		.calendar:hover {border-color: #fff;}
+	}
+	.select.day {width: 77px;}
+	.select.month {width: 165px;}
+
+}
+
+.search-title {margin: 0 0 1.25em; color: #fff; font-weight: 700; font-size: 19px; text-transform: uppercase;}
+
+.sidebar .searchform {margin-bottom: 20px; box-sizing: border-box;}
+
+.showcase .searchform {padding: 0; background: none;
+	fieldset {margin: 0; padding: 0; border: none;}
+	.select {height: 30px; line-height: 30px;
+		select {height: 30px;}
+		&:after {height: 30px; line-height: 30px; border: none;}
+	}
+	.select.day {width: 80px;}
+	.select.month {width: 105px;
+		.val {display: block; width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+	}
+	.select-set .calendar {display: none;}
+	input {height: 30px; line-height: 30px;}
+	.search-title {margin-bottom: 0.5em; font-size: 17px;}
+	.criteria {padding-bottom: 70px; background: rgba(27,83,140,1);}
+	.search-footer {padding: 20px 0; background: #fff;
+		.guarantee {float: left; width: 100%; margin: 0; color: $light_text; text-align: center;}
+		.guarantee:before {display: inline-block; vertical-align: middle; width: 30px; height: 30px; padding: 0 10px 0 0; background: url("../img/sprite.png") -137px -90px no-repeat; content: " ";}
+	}
+	p.submit {position: relative; clear: left; top: -150px; margin-bottom: -150px; text-align: center;
+		button {width: auto; padding: 15px 50px;}
+		button:hover {background: #fff; color: $navy;}
+	}
+	label {display: inline-block; vertical-align: top; margin-bottom: 0; line-height: 1.75em;}
+	label:first-child{display: block;}
+	.field {display: inline-block; vertical-align: bottom;
+		label {min-width: 60px; padding-right: 10px;}
+	}
+	.field:nth-of-type(2n) {margin-right: 20px;}
+	.field.purpose {display: block; margin: 0 0 15px; 
+		label {width: auto;}
+	}
+	.field.guests .select {width: 230px; height: 30px; box-sizing: border-box;}
+	.field.guests .select:after {color: #fff;}
+	.field.guests .select:hover:after {color: $blue;}
+	.field.destination {display: block; max-width: none; width: auto;
+		input {width: 100%;}
+	}
+
+}
+
+@media (min-width: 460px) {
+	.showcase .searchform {
+		.search-footer {padding: 25px 35px;
+			.guarantee {float: left; width: auto; line-height: 50px;}
+		}
+		
+	}
+}
+
+@media (min-width: 600px) {
+	.showcase .searchform {
+		.field {display: inline-block; vertical-align: bottom; box-sizing: border-box; width: 47%;}
+	}
+}
+
+@media (min-width: 880px) {
+	.showcase .searchform {
+		.select-set .calendar {display: inline-block;}
+		.select {height: 46px; line-height: 46px;
+			select {height: 46px;}
+			&:after {height: 46px; line-height: 46px; border: none;}
+		}
+		input {height: 46px; line-height: 46px;}
+		fieldset {padding: 35px;}
+		.field.guests .select {width: 230px; height: 46px; box-sizing: border-box;}
+		.field {padding: 0 0 5px; box-sizing: border-box; white-space: nowrap;}
+		.field.check {margin: 0 0 15px; padding-top:10px; vertical-align: top;}
+		.field.destination {display: block; width: auto; margin: 20px 0 15px;}
+		.field.purpose {margin: 0; 
+			label {line-height: 46px;}
+		}
+		label:first-child{display: inline-block; line-height: 46px;}
+		.criteria {padding-bottom: 100px;}
+	}
+}
+
+@media (min-width: 1230px) {
+	.searchform {padding: 35px;}
+	.showcase {margin: 0 0 35px; padding: 50px 0;
+		.searchform {float: left; width: 58%; box-sizing: border-box; 
+			.criteria {padding-bottom: 35px; padding-right: 0; background: rgba(27,83,140,0.85);
+				.frame {border-right: none; padding-right: 0;}
+				.field {max-width: 300px;}
+				.field.purpose {max-width: none;}
+				.field.destination {max-width: none; width: auto;
+					input {width: 535px; max-width: none;}
+				}
+				
+			}
+			p.submit {position: static; top: 0; float: right; clear: none; margin: 0; text-align: right;
+				button:hover {background: $navy; color: #fff;}
+			}
+		}
+	}
+}

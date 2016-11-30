@@ -1,0 +1,21 @@
+.tabs {margin: 24px 0 30px; padding: 0; list-style: none; font-size: 0; 
+	.tab {display: inline-block; vertical-align: bottom; position: relative; margin: 6px -1px 0 0; border: $def_border; font-size: 12px; transition: margin 0.3s}
+	.tab:hover {z-index: 2; margin-top: 0;}
+	a {display: block; height: 44px; padding: 0 10px; color: #6b6b6b; line-height: 44px; text-align: center;}
+	a:hover {height: 50px; background: #fcfcfc; color: $navy; line-height: 50px;}
+	.active a {background: #fcfcfc; color: $navy; font-weight: 600;}
+}
+
+.tab-content {display: none; padding: 1px 0;
+	p:first-child {margin-top: 0;}
+}
+.tab-content.active {display: block;}
+
+.box .tabs {margin-bottom: 0;}
+
+@media (min-width: 800px) {
+	.tabs {
+		.tab {font-size: 14px;}
+		a {width: 160px; padding: 0;}
+	}
+}

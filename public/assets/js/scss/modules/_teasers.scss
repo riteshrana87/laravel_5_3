@@ -1,0 +1,12 @@
+.teasers {margin-top: 30px; background: #fff; font-size: 0; text-align: center;}
+.teaser {margin: 0; padding: 50px 40px; box-sizing: border-box; color: $light_text; font-size: 16px;
+	.teaser-title {margin: 10px 0 1em; color: $dark_text; font-size: 20px; font-weight: 600;
+		a {color: $dark_text;}
+		a:hover {color: $orange;}
+	}
+}
+
+@media (min-width: 800px) {
+	.teaser {display: inline-block; width: 33%; max-width: 408px; height: 300px; border-left: 2px solid #f7f8f9; vertical-align: top;}
+	.teaser:first-child {border-left: none;}
+}

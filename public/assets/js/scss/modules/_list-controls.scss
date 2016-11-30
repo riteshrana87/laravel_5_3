@@ -1,0 +1,18 @@
+.list-controls {margin-bottom: 20px;
+	.sort-by {font-size: 0; text-align: center;}
+	.layout {color: $navy; line-height: 45px; text-align: center;
+		a {display: inline-block; vertical-align: middle; width: 45px; height: 45px; margin: 0 -1px 0 0; border: $def_border; background-image: url("../img/sprite.png"); font-size: 0; text-align: center;}
+		a:hover {background-color: #f1f2f3;}
+		a.show-grid {background-position: -49px -5px;}
+		a.show-grid:hover, a.show-grid.active {background-position: -5px -5px;}
+		a.show-list {background-position: -49px -49px;}
+		a.show-list:hover, a.show-list.active {background-position: -5px -49px;}
+		.info {padding-right: 15px;}
+
+	}
+}
+
+@media (min-width: 900px) {
+	.sort-by {margin: 0; float: left; text-align: left;}
+	.layout {margin: 0; float: right; text-align: right;}
+}

@@ -1,0 +1,86 @@
+@charset "UTF-8"; // set charset
+
+@import 'fonts';
+
+// colors
+$navy: #1b538b;
+$orange: #f49e17;
+$light_text: #7f7f7f;
+$dark_text: #383838;
+$star1: "\f005\00a0";
+$star2: "\f005\00a0\f005\00a0";
+$star3: "\f005\00a0\f005\00a0\f005\00a0";
+$star4: "\f005\00a0\f005\00a0\f005\00a0\f005\00a0";
+$star5: "\f005\00a0\f005\00a0\f005\00a0\f005\00a0\f005\00a0";
+$check: "\f00c";
+$x: "\f00d";
+$arrowDown: "\f078";
+$dot: "\f111";
+
+$def_border: 1px solid #e1e1e1;
+$def_transition: all 0.3s;
+
+// file structure based on smacss
+
+// BASE
+
+body {margin: 0; padding: 0; background: #2d2d32; color: #6b6b6b; font: 400 14px/1.5em "Gotham", sans-serif;} 
+p, ul, ol {margin: 1.5em 0;}
+a {color: $navy; text-decoration: none; transition: $def_transition;}
+a:hover {color: $orange;}
+
+label {display: block; font-weight: 600;}
+input, textarea {width: 100%; padding: 0 14px; border: $def_border; border-radius: 3px; color: #b1b1b1; font-size: 15px; line-height: 44px; box-sizing: border-box;}
+input[type="radio"], input[type="checkbox"] {width: auto; padding: 0; border: none;}
+button, .button {padding: 15px 25px; background: $navy; border: none; color: #fff; font-weight: 700; font-family: "Gotham", sans-serif; text-transform: uppercase; cursor: pointer;}
+
+.cf:after {display: block; clear: both; overflow: hidden; height: 0; content: " ";}
+
+*::selection {background: $orange; color: #fff;}
+*::-moz-selection {background: $orange; color: #fff;}
+*::selection a {color: #fff;}
+*::-moz-selection a {color: #fff;}
+
+table {width: 100%; border-collapse: collapse; border: $def_border;}
+tr:nth-of-type(2n-1) {background: #F7F8F9;}
+th {padding: 10px 15px; border: none; background: $dark-text; color: #fff;}
+td {padding: 10px 15px; border: $def_border; border-bottom: none; text-align: center;}
+.text {text-align: left;}
+
+// LAYOUT
+
+@import 'header';
+@import 'content';
+@import 'footer';
+
+ 
+// MODULES
+@import 'modules/fotorama';
+
+@import 'modules/searchform';
+@import 'modules/widgets';
+@import 'modules/pager';
+@import 'modules/breadcrumb';
+@import 'modules/post-list';
+@import 'modules/teasers';
+@import 'modules/article';
+@import 'modules/forms';
+@import 'modules/tabs';
+@import 'modules/gallery';
+@import 'modules/list-controls';
+@import 'modules/hotel-list-item';
+@import 'modules/checkout';
+@import 'modules/messages';
+@import 'modules/tags';
+@import 'modules/showcase';
+@import 'modules/map';
+
+// home page modules
+@import 'modules/banner';
+@import 'modules/hotel-teasers';
+@import 'modules/listing';
+
+// plugins
+
+@import 'ui/structure';
+@import 'ui/theme';

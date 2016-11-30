@@ -1,0 +1,90 @@
+.widget {margin: 0 15px 20px; padding: 35px; border: 1px solid #e9e9e9; font-size: 14px; vertical-align: top; text-align: center;
+	.widget-title {margin: 0 0 1.25em; color: $navy; font-weight: 700; font-size: 19px; text-transform: uppercase;}
+	.link-list {margin: 0; padding: 0; list-style: none; border: 1px solid #e7e7e7;
+		li {margin: 0; padding: 0;}
+		a {display: block; position: relative; padding: 15px; border-top: 1px solid #e7e7e7; color: $light_text; font-weight: 600; line-height: 1em; text-transform: uppercase;}
+		a:hover {background: #e7e7e7; color: #1a528b;}
+		li:first-child > a {border-top: none;}
+	}
+	.link-list.archive {
+		a {text-transform: none;}
+	}
+	.link-list.menu {
+		a:after {display: block; position: absolute; right: 0; top: 0; width: 45px; height: 100%; font: 400 0.75em/45px "FontAwesome"; text-transform: none; text-align: center; content: "\f054";}
+	}
+	.link-list.filters {
+		li > a:after {display: block; position: absolute; right: 0; top: 0; width: 45px; height: 100%; border-left: 1px solid #e7e7e7; color: $navy; font: 400 1em/45px "FontAwesome"; text-transform: none; text-align: center; content: "\f078";}
+		li.expanded > a {background: $navy; color: #fff;}
+		li.expanded > a:after {display: block; position: absolute; right: 0; top: 0; width: 45px; height: 100%; background: #164370; color: #fff; font: 400 1em/45px "FontAwesome"; text-transform: none; text-align: center; content: "\f077";}
+		li.expanded > a:after {display: block; position: absolute; right: 0; top: 0; width: 45px; height: 100%; border-left-color: #164370; background: #164370; color: #fff; font: 400 1em/45px "FontAwesome"; text-transform: none; text-align: center; content: "\f077";}
+
+		.filter-list {display: none; list-style: none; margin: 0; padding: 10px 10px 0;
+			li {margin: 0 0 15px; color: $light_text; line-height: 24px;}
+			input {margin-right: 10px; vertical-align: middle;}
+			label {display: inline-block; font-weight: 400; vertical-align: middle;}
+		}
+		.expanded .filter-list {display: block;}
+
+		.collections {display: none; padding: 20px 15px; color: $light_text;
+			.collection-list-title {margin: 0 0 1em; font-size: 14px; font-weight: 400;}
+			.collection-list {list-style: none; margin: 0; padding: 0; 
+				li {padding: 3px 0; line-height: 1.5em;}
+				a {display: inline; padding: 0; border: none; color: $navy; font-weight: 400; text-transform: none;}
+				a:hover {background: none; color: $orange;}
+				a:before {display: inline-block; vertical-align: middle; padding: 0 10px 0 0; font-family: "FontAwesome"; font-size: 0.75em; content: "\f0da"; transition: $def_transition;}
+				a:hover:before {padding: 0 7px 0 3px;}
+				a:after {display: none; content: "";}
+			}
+		}
+		.expanded .collections {display: block;}
+	}
+
+	.hotel-list {margin: 0; padding: 0; list-style: none;
+		.hotel-item {margin: 15px 0 0; text-align: left;}
+		.hotel-item:first-child {margin: 0;}
+		.hotel-name {margin: 0 0 0.25em; font-weight: 600; font-size: 15px;
+			a {color: $dark_text;}
+			a:hover {color: $navy;}
+		}
+		.location {overflow: hidden; margin: 0.25em 0; color: #8f9395; font-size: 15px;}
+		.picture {float: left; margin: 0 20px 0 0;
+			a:hover {opacity: 0.75;}
+			img {display: block;}
+		}
+	}
+
+	.booked {margin: 0 -35px -35px; padding: 0; list-style: none; 
+		.booked-item {margin: 0; padding: 20px 35px; box-sizing: border-box; border-top: 1px solid #e7e7e7; text-align: left;
+			.picture {float: left; margin: 0 15px 0 0;
+				img {display: block;}
+			}
+			.picture:hover {opacity: 0.75;}
+			p {margin: 1em 0 0; color: $light_text; line-height: 1.3em;}
+			a {display: inline-block; padding: 5px 0; text-decoration: underline;}
+		}
+	}
+}
+
+@media (min-width: 600px) {
+	.widget {
+		.booked {font-size: 0;
+			.booked-item {display: inline-block; width: 50%; vertical-align: top; font-size: 14px;}
+		}
+		.hotel-list {font-size: 0;
+			.hotel-item {display: inline-block; width: 50%; vertical-align: top; margin: 0; padding-bottom: 15px; font-size: 14px;}
+		}	
+	}
+}
+
+@media (min-width: 900px) {
+	.widget {margin: 20px 0; box-sizing: content-box; text-align: left;
+		.booked {
+			.booked-item {display: block; width: auto;} 
+			.booked-item:first-child {padding-top: 1px; border-top: 0;}
+		}
+		.hotel-list {
+			.hotel-item {display: block; width: auto; margin: 15px 0 0; padding: 0;}
+			.hotel-item:first-child {margin: 0;}
+		}
+	}
+}

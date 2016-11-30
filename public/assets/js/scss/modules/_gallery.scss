@@ -1,0 +1,13 @@
+.fotorama {margin: -20px 0 20px;}
+.fotorama__nav {padding: 2px 0;}
+.fotorama .fotorama__thumb {position:relative; padding-top: 0; padding-bottom: 0; background-image: url("../img/sprite.png"); background-position: 0 -108px; background-color: $navy;
+	img.fotorama__img {position: relative; top: 0;  margin: 0; transition: all 0.3s;}
+}
+.fotorama__thumb:hover img.fotorama__img, .fotorama__nav .fotorama__active img.fotorama__img {margin-top: -84px;}
+.fotorama__thumb:before, .fotorama__thumb:after {display: block; position: absolute; bottom: -6px; height: 0; width: 0; border-width: 3px; border-style: solid; content: " "; transition: $def_transition;}
+.fotorama__thumb:before {right: 50%; border-color: transparent #fff #fff transparent;}
+.fotorama__thumb:after {left: 50%; border-color: transparent transparent #fff #fff;}
+.fotorama__thumb:hover:before, .fotorama__thumb:hover:after, .fotorama__active .fotorama__thumb:before, .fotorama__active .fotorama__thumb:after {bottom: 0;}
+.fotorama__active {background-color: $navy;}
+.fotorama .fotorama__nav .fotorama__thumb-border {border: none; background: none;}
+.fotorama .fotorama__nav .fotorama__nav--thumbs .fotorama__nav__frame {margin: 2px 0; padding: 0 2px;}

@@ -1,0 +1,43 @@
+.article {margin-bottom: 60px; padding: 0 0 35px; background: #fff;
+	.lead {margin: 0 35px; border-bottom: 1px solid #f0f0f0; color: $navy;
+		p:first-child {margin: 1em 0; font-size: 22px; font-weight: 600; line-height: 1.3em;}
+	}
+	.text {margin: 0 35px;}
+	a {text-decoration: underline;}
+	h2 {margin: 2em 0 1em; color: $dark_text; font-size: 16px; font-weight: 600; text-transform: uppercase;}
+	.back {margin: 0; padding: 1.5em 35px 35px;
+		a {display: block; width: 158px; height: 45px; border: $def_border; color: $navy; font-weight: 700; line-height: 45px; text-transform: uppercase; text-align: center; text-decoration: none;}
+		a:hover {background: #e1e1e1;}
+	}
+}
+.article.main {max-width: 840px;}
+.article-header {position: relative; overflow: hidden;
+	img {display: block;}
+	.header-content {position: absolute; bottom: 45px; left: 0; z-index: 2; width: 100%; color: #fff;}
+	.post-date {margin: 0 35px; padding: 0 0 30px; border-bottom: 1px solid rgba(255,255,255,0.5); font-size: 13px; line-height: 20px; text-transform: uppercase;}
+	.post-date:before {display: inline-block; vertical-align: middle; width: 18px; height: 18px; margin: 0 8px 0 0; background: url("../img/sprite.png") -103px -138px; content: ' '}
+	.article-title {margin: 1em 35px 0; font-size: 30px; font-weight: 600; line-height: 1.2em; text-transform: uppercase;}
+}
+.article-header:before {display: block; position: absolute; bottom: 0; left: 35px; width: 0; height: 0; border-width: 6px; border-style: solid; border-color: transparent #fff #fff transparent; content: " ";}
+.article-header:after {display: block; position: absolute; bottom: 0; left: 47px; width: 0; height: 0; border-width: 6px; border-style: solid; border-color: transparent transparent #fff #fff; content: " ";}
+
+.textbox {margin-bottom: 20px; padding: 20px 10px; border-top: 2px solid $orange; background: #fff;
+	h1 {margin: 0 0 1em; color: $dark_text; font-size: 24px; font-weight: 600; line-height: 1.3em;}
+	h1.page-title {margin-bottom: 0;}
+	h1 .stars {display: inline-block; margin-top: 5px; font-size: 14px; line-height: 20px; vertical-align: top;}
+	h2 {margin: 1em 0; color: $navy; font-size: 16px; font-weight: 600; text-transform: uppercase;}
+	h2.section-title {margin: 0 0 0.25em; color: $dark_text; font-size: 24px; font-weight: 600; text-transform: none;}
+	.sub-title {margin-top: 0; color: $navy;}
+	.book {margin-bottom: 0;}
+	.book a {display: block; width: 160px; height: 44px; border: $def_border; color: $navy; font-weight: 700; line-height: 44px; text-transform: uppercase; text-align: center;}
+	.book a:hover {background: $navy; color: #fff;}
+}
+.main.textbox {max-width: 770px; margin-bottom: 0;}
+
+@media (min-width: 1000px) {
+	.textbox {padding: 35px;}
+}
+
+.box {padding: 35px; background: #fff;
+	.box-title {margin-top: 0; color: $navy; font-weight: 700; font-size: 19px; text-transform: uppercase;}
+}

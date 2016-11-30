@@ -1,0 +1,27 @@
+.map {position: relative; margin: 1px 0 20px; padding: 0; border: none; background: #fff;
+	.map-holder {height: 400px;}
+	.map-controls {position: absolute; right: 10px; top: 10px; z-index: 100; width: 30px; margin: 0; padding: 0;
+		.zoom {display: block; overflow: hidden; width: 30px; height: 30px; margin: 5px 0 0; border-radius: 15px; background: #fff url("../img/sprite.png"); text-indent: 100%; white-space: nowrap;}
+		.zoom:hover {background-color: $orange;}
+		.zoom.in {background-position: -98px -70px;}
+		.zoom.out {background-position: -98px -40px;}
+	}
+	.larger-map {position: absolute; left: 0; bottom: 0; z-index: 100; padding: 5px 10px; background: #fff; font-size: 12px;}
+}
+
+.widget.map {margin: 20px 0; 
+	.map-holder {height: 360px;}
+}
+
+.infobox {width: 360px; padding: 10px 0; font-size: 15px; font-family: "Gotham",sans-serif;
+	.img {float: left; margin: 0 20px 10px 0;}
+	.hotel-name {margin: 0; color: $dark_text; font-weight: 600; font-size: 17px;}
+	.location {margin: 0;}
+	.stars {margin: 3px 0;}
+	.book-now a {font-weight: 700; font-size: 14px; text-transform: uppercase;}
+	.graphic-score {float: right; clear: right;}
+	.book-now {clear: left; margin: 20px 0 0; text-align: left;
+		a {display: inline-block; width: 160px; height: 44px; border: $def_border; line-height: 44px; text-align: center;}
+		a:hover {background: $navy; color: #fff;}
+	}
+}

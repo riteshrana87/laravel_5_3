@@ -1,0 +1,17 @@
+.pager {padding: 35px 0; list-style: none; border-top: 2px solid #e1e1e1; text-align: center;
+	.pagelinks {margin: 0; padding: 0; font-size: 0;}
+	li {display: inline-block; margin: 0; padding: 0; font-size: 14px;}
+	a {display: block; width: 45px; height: 44px; border: $def_border; border-left: 0; color: $light_text; line-height: 44px; text-align: center;}
+	a:hover {background: #e1e1e1; color: $navy;}
+	a.back, a.next {width: auto; padding: 0 30px; color: $navy;}
+	a.current {color: #e1e1e1;}
+	a.current:hover {background: #fff;}
+	li:first-child a {border-left: $def_border;}
+	.info {color: $navy; line-height: 45px; text-align: center;}
+}
+
+@media (min-width: 1000px) {
+	.pagelinks {float: right;}
+	.pager {text-align: right;}
+	.info {margin: 0; float: left;}
+}

@@ -1,0 +1,2527 @@
+/*add wine from database to cellar*/
+
+$(document).ready(function() {
+    $('#btn-search-wine').click(function() {
+
+        var search_vin = $("#txt-search-vintage").val().trim();
+        var search_val = $("#txt-search-wine").val().trim();
+
+        if (search_val != ""){// && search_vin != "" && $.isNumeric(search_vin)) {
+            $("#btn-next-step").addClass('disabled');
+            $.ajax({
+                type: "post",
+                cache: false,
+                url: '/mycellar/searchwine',
+                data: {vintage: search_vin, wine_name: search_val},
+                success: function(response) {
+                    //var resobj = $.parseJSON(response);
+                    $("#ajaxresults").html(response.html);
+                    return false;
+                }
+            });
+        } else {
+            BootstrapDialog.alert('Please enter wine name to search');
+            $("#txt-search-wine").focus();
+            return false;
+        }
+    });
+});
+
+/*select box design set*/
+$('.selectpicker').selectpicker();
+
+/* tab validation frontend for add tasting notes start here*/
+$(document).ready(function() {
+
+    var navListItems = $('ul.setup-panel li a'),
+            allWells = $('.setup-content');
+
+    allWells.hide();
+    navListItems.click(function(e) {
+        e.preventDefault();
+        var $target = $($(this).attr('href')),
+                $item = $(this).closest('li');
+
+        if (!$item.hasClass('disabled')) {
+            navListItems.closest('li').removeClass('active');
+            $item.addClass('active');
+            allWells.hide();
+            $target.show();
+        }
+    });
+    $('ul.setup-panel li.active a').trigger('click');
+    $('#btn-next-step').on('click', function(e) {
+        $('ul.setup-panel li:eq(1)').removeClass('disabled');
+        $('ul.setup-panel li a[href="#step2"]').trigger('click');
+        CheckedProductList();
+    });
+
+    $('#btn-next-details-step').on('click', function(e) {
+        checkSelectedProductsCount();
+        $('ul.setup-panel li:eq(2)').removeClass('disabled');
+        $('ul.setup-panel li a[href="#step3"]').trigger('click');
+    });
+
+});
+/* end here tab validation */
+
+/* checkbox validation in listing products time next button disable and enable*/
+$(document).ajaxComplete(function() {
+    $(".checkbox").change(function() {
+        var ProductIds = $(".checkbox:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        if (ProductIds.length > 0) {
+            $("#btn-next-step").removeClass('disabled');
+        }
+        else {
+            $("#btn-next-step").addClass('disabled');
+        }
+    });
+});
+
+/* for searching without ajax data listing in frontend
+ * 4th September 2014
+ * Manish khilwani <manish.khilwani@gmail.com>
+ * */
+$(".checkbox").change(function() {
+    var ProductIds = $(".checkbox:checked").map(function() {
+        return $(this).val();
+    }).toArray();
+
+    if (ProductIds.length > 0) {
+        $("#btn-next-step").removeClass('disabled');
+        $("#btn-next-error").removeClass('disabled');
+    }
+    else {
+        $("#btn-next-step").addClass('disabled');
+    }
+});
+
+/* nex button click event call on not login users alert render*/
+$(document).ready(function() {
+    $("#btn-next-error").click(function() {
+        BootstrapDialog.alert('please login first !');
+    });
+});
+
+
+/* checked checkbox id get and listing query via ajax and listing tab open */
+function CheckedProductList() {
+    var ProductIds = $(".checkbox:checked").map(function() {
+        return $(this).val();
+    }).toArray();
+    $.ajax({
+        type: "post",
+        cache: false,
+        url: '/mycellar/selectedsearchwine',
+        data: {ProductId: ProductIds},
+        success: function(response) {
+            $("#btn-next-details-step").removeClass('disabled');
+            $("#selectedproductslistId").html(response.html);
+            $('ul.setup-panel li:eq(0)').addClass('disabled');
+        }
+    });
+
+}
+
+/* selected checkbox unchecked then remove the products in product list*/
+$(document).ajaxComplete(function() {
+    $(".selected_product").change(function() {
+        var UncheckedId = $(this).val();
+        var ProductIds = $(".selected_product:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        // BootstrapDialog.confirm('Are you sure you want to delete this select Product?', function(result) {
+
+        $("#trid_" + UncheckedId).remove();
+        // $("#list_prod_id_" + UncheckedId).remove();
+        if (!ProductIds.length > 0) {
+            $('ul.setup-panel li:eq(1)').addClass('disabled');
+            $("#btn-next-details-step").addClass('disabled');
+            $('ul.setup-panel li:eq(2)').addClass('disabled');
+            $('ul.setup-panel li:eq(0)').removeClass('disabled');
+            $('ul.setup-panel li a[href="#step1"]').trigger('click');
+        }
+        $('#chkId_' + UncheckedId).prop('checked', 'true');
+    });
+});
+
+/* selected checkbox count check if zero it returns otherwise next step */
+function checkSelectedProductsCount() {
+    var ProductIds = $(".selected_product:checked").map(function() {
+        return $(this).val();
+    }).toArray();
+
+    if (ProductIds.length > 0) {
+        $('ul.setup-panel li:eq(0)').addClass('disabled');
+        $('ul.setup-panel li:eq(1)').addClass('disabled');
+        $.ajax({
+            type: "post",
+            cache: false,
+            url: '/mycellar/selectedwineform',
+            data: {ProductId: ProductIds},
+            success: function(response) {
+                $("#winedeails_tab-listing").html(response.html);
+            }
+        });
+    }
+}
+
+
+/* back option in selected product list page to searchlist page */
+$(document).ready(function() {
+    $('#btn-back-list-step').click(function() {
+        $('ul.setup-panel li:eq(0)').removeClass('disabled');
+        $('ul.setup-panel li a[href="#step1"]').trigger('click');
+        $('ul.setup-panel li:eq(1)').addClass('disabled');
+    });
+});
+
+/* back option in wine detail tab to elected wines list tab */
+$(document).ready(function() {
+    $('#btn-back-selected-list-step').click(function() {
+        $('ul.setup-panel li:eq(0)').addClass('disabled');
+        $('ul.setup-panel li:eq(1)').removeClass('disabled');
+        $('ul.setup-panel li a[href="#step2"]').trigger('click');
+        $('ul.setup-panel li:eq(2)').addClass('disabled');
+    });
+});
+
+/* pre arrival checkbox validation start here*/
+$(document).ajaxComplete(function() {
+    $(".prearrival").change(function() {
+        var prearrival_id = $(this).attr("pid");
+        if ($('.prearrival').is(':checked')) {
+            $("#est_arrival_date_" + prearrival_id).removeClass('hidden');
+            $("#edit_position_" + prearrival_id).hide();
+        } else {
+            $("#est_arrival_date_" + prearrival_id).val('');
+            $("#edit_position_" + prearrival_id).show();
+            $("#est_arrival_date_" + prearrival_id).addClass('hidden');
+        }
+    });
+});
+
+$(document).ajaxComplete(function() {
+    $(function() {
+        $('.datepicker1').datetimepicker({
+            format: 'YYYY-MM-DD',
+            minDate: new Date(),
+            defaultDate: new Date(),
+            pickTime: false, use24hours: false
+        });
+    });
+});
+/* end here*/
+
+/* wine details form validation check*/
+$(document).ready(function() {
+    $('#form_submit_check').click(function() {
+        if ($("#winedetails").valid()) {
+            if ($("#purchase_source").val() == "createnew") {
+                $("#hiddenpurchasesource").val($("#new_purchase_source").val());
+            }
+            var formArray = $("#winedetails").serialize();
+            $.ajax({
+                type: "post",
+                url: '/mycellar/addwine-details',
+                data: formArray,
+                success: function(response) {
+                    if (response.result == "true") {
+                        window.location = '/mycellar';
+                    } else {
+                        BootstrapDialog.alert('please try again some time');
+                    }
+                }
+            });
+        }
+    });
+});
+
+//add wine form validation
+$(document).ready(function() {
+
+    $('#winedetails').validate({// initialize plugin within DOM ready
+        // other options,
+        rules: {
+            'qty[]': {
+                required: true
+            },
+            'price[]': {
+                required: true
+            }
+        }
+    });
+
+});
+
+//datepicker function calling first one
+$(function() {
+    $('#datetimepicker1').datetimepicker({
+        format: 'YYYY-MM-DD',
+        defaultDate: new Date(),
+        maxDate: new Date(),
+        pickTime: false, use24hours: false
+    });
+});
+//datepicker function calling lastone
+$(function() {
+    $('#datetimepicker10').datetimepicker({
+        format: 'YYYY-MM-DD',
+        defaultDate: new Date(),
+        maxDate: new Date(),
+        pickTime: false, use24hours: false
+    });
+});
+
+/* numeric and dot value validation */
+$('#tax_rate').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+$('#tax').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+
+$(document).ajaxComplete(function() {
+    //called when key is pressed in textbox
+    $(".Quantity").keypress(function(e) {
+        //if the letter is not digit then display error and don't type anything
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            //display error message
+            $("#errmsg").html("Digits Only").show().fadeOut("slow");
+            return false;
+        }
+    });
+
+    /* value check*/
+    $(".Quantity").blur(function(e) {
+        var qty = parseInt($(this).val());
+        var id = $(this).attr('id');
+        if (qty <= 0) {
+            $("#" + id).css("border-color", "red");
+            $("#" + id).val('');
+        } else {
+            $("#" + id).css("border-color", "grey");
+        }
+    });
+});
+
+/* for edit cellar product price edit page*/
+//called when key is pressed in textbox
+$(".Quantity").keypress(function(e) {
+    //if the letter is not digit then display error and don't type anything
+    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        //display error message
+        $("#errmsg").html("Digits Only").show().fadeOut("slow");
+        return false;
+    }
+});
+
+/* value check*/
+$(".Quantity").blur(function(e) {
+    var qty = parseInt($(this).val());
+    var id = $(this).attr('id');
+    if (qty <= 0) {
+        $("#" + id).css("border-color", "red");
+        $("#" + id).val('');
+    } else {
+        $("#" + id).css("border-color", "grey");
+    }
+});
+
+
+$(document).ajaxComplete(function() {
+    $('.Cost').keypress(function(event) {
+        if (event.which == 8 || event.which == 0) {
+            return true;
+        }
+        if (event.which < 46 || event.which > 59) {
+            return false;
+        }
+        if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+            return false;
+        }
+    });
+});
+
+//shipping form validation
+$('#shipping').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+
+//check is numeric or not
+$('#buyer_premium').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+
+
+/* cost value update on extended cost start here*/
+$(document).ajaxComplete(function() {
+//via qty update
+    $(".Quantity").blur(function(e) {
+        var qty = $(this).val();
+        var id = $(this).attr('id');
+        var res = id.split("_");
+        var ProductCost = $("#price_" + res[1]).val();
+        var extendedCost = qty * ProductCost;
+        $("#estimated_cost_" + res[1]).html(extendedCost.toFixed(2));
+    });
+
+//via price update
+    $(".Cost").blur(function(e) {
+        var price = $(this).val();
+        var id = $(this).attr('id');
+        var res = id.split("_");
+        var ProductQty = $("#qty_" + res[1]).val();
+        var extendedCost = price * ProductQty;
+        $("#estimated_cost_" + res[1]).html(extendedCost.toFixed(2));
+    });
+});
+/* end here */
+
+/* product infomation form open */
+function OpenProductInfoForm(id) {
+    $('#purchaseInfoModal').modal('hide');
+    $('#purchaseInfoModal').modal('show');
+    $("#purchase_info_id").val(id);
+}
+/* end here* */
+/* purchasesource dropdown change event*/
+$(document).ready(function() {
+    $("#purchase_source").unbind('change').bind('change', function() {
+        if ($(this).val() == 'createnew') {
+            $(".newsource").removeClass('hide');
+        } else {
+            $("#new_purchase_source").val('');
+            $(".newsource").addClass('hide');
+        }
+    });
+});
+/*end here*/
+
+/* checkboxclick event function auction purchase in product info form*/
+$(document).ready(function() {
+    $("#auction_purchase").change(function() {
+        if ($('#auction_purchase').is(':checked')) {
+            $("#lotnum").removeClass('hide');
+            $("#buyerprice").removeClass('hide');
+        } else {
+            $("#lot_number").val('');
+            $("#buyer_premium").val('');
+            $("#lotnum").addClass('hide');
+            $("#buyerprice").addClass('hide');
+        }
+    });
+});
+/*end here*/
+
+/*purchase info modal validation close event*/
+$(document).ready(function() {
+    $('#purchase_info_close').click(function() {
+        $('#purchaseInfoModal').modal('toggle');
+    });
+});
+
+
+/* purchase information form submit functionalites with insert */
+$(document).ready(function() {
+    $('#purchase_info_submit').click(function() {
+        var purchase_source = $("#purchase_source").val();
+        var check = true;
+        if (purchase_source == "createnew") {
+            if ($("#new_purchase_source").val() == '') {
+                check = false;
+                BootstrapDialog.alert('please enter new purchase source');
+            }
+        }
+
+        if ($("#purchase_source").val() == "createnew") {
+            $("#hiddenpurchasesource").val($("#new_purchase_source").val());
+        }
+
+        var formArray = $("#purchaseinfo").serialize();
+        if (check) {
+            $.ajax({
+                type: "post",
+                url: '/productinfo/addpurchase-info',
+                data: formArray,
+                success: function(response) {
+                    if (response.result == "true") {
+                        $("#purchase_id_" + $("#purchase_info_id").val()).val(response.productInfoId);
+                        $("#purchaseinfo").get(0).reset();
+                        $('#purchaseInfoModal').modal('toggle');
+                        BootstrapDialog.alert('successfully added purchase info');
+                    } else {
+                        BootstrapDialog.alert('please try again some time');
+                    }
+                }
+            });
+        }
+    });
+});
+/* end here */
+
+/* remove product from list */
+$(document).ajaxComplete(function() {
+    $(".removeProduct").click(function() {
+        var product_Div_Id = $(this).attr("productId");
+        BootstrapDialog.confirm('Are you sure you want to delete this selected Product?', function(result) {
+            if (result) {
+                $("#winedetails_" + product_Div_Id).remove();
+            }
+        });
+    });
+});
+
+/* manual wine entry modal related validation functios start here */
+$(document).on('click', '#manualWine', function() {
+    $('#manualentrymodal').modal();
+});
+
+/* tab validation in manu entry tabs*/
+
+/* tab validation frontend for add tasting notes start here*/
+$(document).ready(function() {
+
+    var navListItems = $('ul.setup-panel1 li a'),
+            allWells = $('.setup-content1');
+
+    allWells.hide();
+    navListItems.click(function(e) {
+        e.preventDefault();
+        var $target = $($(this).attr('href')),
+                $item = $(this).closest('li');
+
+        if (!$item.hasClass('disabled')) {
+            navListItems.closest('li').removeClass('active');
+            $item.addClass('active');
+            allWells.hide();
+            $target.show();
+        }
+    });
+    $('ul.setup-panel1 li.active a').trigger('click');
+
+    $('#btn-next-country').on('click', function(e) {
+        if ($("#manual_wine_entry_form").valid()) {
+            $('ul.setup-panel1 li:eq(1)').removeClass('disabled');
+            $('ul.setup-panel1 li a[href="#country"]').trigger('click');
+            $('ul.setup-panel1 li:eq(0)').addClass('disabled');
+        }
+    });
+
+    $('#btn-next-color').on('click', function(e) {
+        if (countryvalid()) {
+            $('ul.setup-panel1 li:eq(2)').removeClass('disabled');
+            $('ul.setup-panel1 li a[href="#color"]').trigger('click');
+            $('ul.setup-panel1 li:eq(1)').addClass('disabled');
+        }
+    });
+
+    $('#btn-next-summary').on('click', function(e) {
+        if (colorvalid()) {
+            $('ul.setup-panel1 li:eq(3)').removeClass('disabled');
+            $('ul.setup-panel1 li a[href="#summary"]').trigger('click');
+            $('ul.setup-panel1 li:eq(2)').addClass('disabled');
+            UpdateFields();
+        }
+    });
+
+});
+
+$(document).ready(function() {
+    $('#home_cancel').click(function() {
+        $('#manualentrymodal').modal('toggle');
+    });
+});
+
+/* back option country to year tab */
+$(document).ready(function() {
+    $('#btn-back-year').click(function() {
+        $('ul.setup-panel1 li:eq(0)').removeClass('disabled');
+        $('ul.setup-panel1 li a[href="#year"]').trigger('click');
+        $('ul.setup-panel1 li:eq(1)').addClass('disabled');
+    });
+});
+
+/* back option color to country */
+$(document).ready(function() {
+    $('#btn-back-country').click(function() {
+        $('ul.setup-panel1 li:eq(1)').removeClass('disabled');
+        $('ul.setup-panel1 li a[href="#country"]').trigger('click');
+        $('ul.setup-panel1 li:eq(2)').addClass('disabled');
+    });
+});
+/* back option color to country */
+$(document).ready(function() {
+    $('#btn-back-color').click(function() {
+        $('ul.setup-panel1 li:eq(2)').removeClass('disabled');
+        $('ul.setup-panel1 li a[href="#color"]').trigger('click');
+        $('ul.setup-panel1 li:eq(3)').addClass('disabled');
+    });
+});
+/* end here tab validation */
+/* manual entry validation end here */
+
+/* manual entry form validation start here */
+
+/* form validation */
+$(document).ready(function() {
+    $('#manual_wine_entry_form').validate({
+        ignore: [],
+        rules: {
+            wineyear: {
+                required: true
+            },
+            producer: {
+                required: true
+            },
+            title: {
+                required: "Please enter title"
+            }
+        },
+        messages: {
+            required: "this field is required",
+            wineyear: {
+                required: "Please enter a vintage year"
+                },
+            producer: {
+                required: "Please enter producer"
+            },
+            title: {
+                required: "Please enter title"
+            }
+        }
+    });
+});
+
+/* country via state ajax functions here */
+$('#country_id').unbind('change').bind('change', function() {
+    var state_id = $('#state_id');
+    $.ajax({
+        type: "post",
+        url: '/tastingnotes/state',
+        data: {id: $(this).val()},
+        success: function(response) {
+            if (response.result == "true") {
+                console.log(response);
+                $("#state_id").empty();
+                $("#sts").css('color', '#ffffff');
+                $.each(response.states, function(key, val) {
+                    $.each(val, function(key1, val1) {
+                        if (key1 == "name")
+                            state_id.append("<option value='" + val.id + "'>" + val.name + "</option>");
+                    });
+                });
+            } else {
+                $("#state_id").empty();
+                state_id.append("<option value=''>No region for selected country</option>");
+            }
+        }
+    });
+});
+/* state via city ajax functions here */
+$('#state_id').unbind('change').bind('change', function() {
+    var subRegionId = $('#sub_region_id');
+    $.ajax({
+        type: "post",
+        url: '/subregion/getsubregionlist',
+        data: {id: $(this).val()},
+        success: function(response) {
+            if (response.result == "true") {
+                console.log(response);
+                $("#sub_region_id").empty();
+                $("#sts").css('color', '#ffffff');
+                subRegionId.append("<option value=''>select sub region </option>");
+                $.each(response.subregion, function(key, val) {
+                    subRegionId.append("<option value='" + key + "'>" + val + "</option>");
+                });
+            } else {
+                $("#sub_region_id").empty();
+                subRegionId.append("<option value=''>No subregion for selected region</option>");
+            }
+        }
+    });
+
+});
+
+/* form validation for country*/
+
+function countryvalid() {
+    if ($("#country_id").val() == '') {
+        $("#input-error").show();
+        $("#input-error").css('color', 'red');
+        $("#input-error").html('please select country');
+        setTimeout("jQuery('#input-error').hide();", 3000);
+        return false;
+    }
+    return true;
+}
+
+/* form validation for color*/
+
+function colorvalid() {
+    var varietal_id = $("#varietal_id").val();
+    var wine_type = $("#wine_type").val();
+    var wine_color = $("#wine_color").val();
+    if (varietal_id == '') {
+        $("#varietal").show();
+        $("#varietal").css('color', 'red');
+        $("#varietal").html('please select varietal');
+        setTimeout("jQuery('#varietal').hide();", 3000);
+        return false;
+    }
+    if (!$('input[name=wine_type]:checked').val()) {
+        $("#type-error").show();
+        $("#type-error").css('color', 'red');
+        $("#type-error").html('please select wine type');
+        setTimeout("jQuery('#type-error').hide();", 3000);
+        return false;
+    }
+    if (!$('input[name=wine_color]:checked').val()) {
+        $("#color-error").show();
+        $("#color-error").css('color', 'red');
+        $("#color-error").html('please select wine color');
+        setTimeout("jQuery('#color-error').hide();", 3000);
+        return false;
+    }
+    return true;
+}
+
+/* update last step fields*/
+function UpdateFields() {
+    var countryname = $("#country_id option:selected").text();
+    var varietal_idname = $("#varietal_id option:selected").text();
+    var state_iddisplay = $("#state_id option:selected").text();
+    var sub_region_iddisplay = $("#sub_region_id option:selected").text();
+
+    if (state_iddisplay != '') {
+        state_iddisplay = " - " + state_iddisplay;
+    }
+    $("#producers").html($("#producer").val() + "-" + $("#title").val());
+    $("#yearsdispaly").html($("#wineyear").val());
+    $("#vrty").html(varietal_idname);
+    $("#countrys").html(countryname + " " + state_iddisplay);
+    $('#wineimg').attr('src', '/assets/images/' + $("#wine_color").val() + '.gif');
+}
+
+/* manual product insert*/
+var Manual = [];
+$(document).ready(function() {
+    $('#btn-form-submit').click(function() {
+        var formArray = $("#manual_wine_entry_form").serialize();
+        //insert manual products via ajax
+        $.ajax({
+            type: "post",
+            url: '/product/manualentry',
+            data: formArray,
+            success: function(response) {
+                if (response.result == "true") {
+                    $("#manual_wine_entry_form").get(0).reset();
+                    /*relisting results*/
+                    var ProductIds = $(".checkbox:checked").map(function() {
+                    return $(this).val();
+                    }).toArray();
+                    ProductIds.push(response.id);
+                    Manual.push(response.id);
+                    WineProductReList(ProductIds, Manual);
+                    return false;
+                }
+                else {
+                    BootstrapDialog.alert('please try again some time');
+                }
+            }
+        });
+    });
+});
+
+/* ajax function for relisting products*/
+function WineProductReList(ProductIds, Manual) {
+    var search_vin = $("#txt-search-vintage").val().trim();
+    var search_val = $("#txt-search-wine").val().trim();
+    $.ajax({
+        type: "post",
+        cache: false,
+        url: '/mycellar/searchwine',
+        data: {vintage: search_vin, wine_name: search_val, Manual: Manual},
+        success: function(response) {
+            $("#ajaxresults").html(response.html);
+            BootstrapDialog.alert('successfully manual wine added');
+            jQuery.each(ProductIds, function(i, val) {
+                $("#list_prod_id_" + val).attr('checked', 'checked');
+            });
+            $('ul.setup-panel1 li.active a').trigger('click');
+            $('ul.setup-panel1 li:eq(0)').removeClass('disabled');
+            $('ul.setup-panel1 li a[href="#year"]').trigger('click');
+            $('ul.setup-panel1 li:eq(3)').addClass('disabled');
+            $("#state_id").empty();
+            $("#sub_region_id").empty();
+            $("#state_id").append("<option value=''>please select region</option>");
+            $("#sub_region_id").append("<option value=''>please select region</option>");
+
+            $('#manualentrymodal').modal('toggle');
+            $("#btn-next-step").removeClass('disabled');
+            return false;
+        }
+    });
+}
+/* manual entry form validation end here */
+
+/* bootstrap tasble declare */
+$(document).ready(function() {
+    $('#dataTables-example1').dataTable();
+});
+$(document).ready(function() {
+    $('#dataTables-example').dataTable();
+});
+
+/* left side arrow mark for add and tasting note add */
+$(document).ready(function() {
+    $(".example").popover({
+        placement: 'right',
+        html: true
+    });
+    $(document).on('click', '.example', function() {
+        $('.example').not(this).popover('hide');
+    });
+});
+$("[data-toggle=popover]")
+        .popover({html: true})
+
+/* ajax complete form display on tab view list validation start here*/
+$(document).ajaxComplete(function() {
+    $(".example").popover({
+        placement: 'right',
+        html: true
+    });
+    $(document).on('click', '.example', function() {
+        $('.example').not(this).popover('hide');
+    });
+
+    $("[data-toggle=popover]")
+        .popover({html: true})
+});
+/* end here */
+
+/* pre arrival checkbox validation start here*/
+$(document).ajaxComplete(function() {
+    $(".storeincase").change(function() {
+        var prearrival_id = $(this).attr("storeid");
+        if ($("#storeincase_" + prearrival_id).is(':checked')) {
+            $("#location_of_wines_" + prearrival_id).removeClass('hide');
+        } else {
+            $("#location_of_wines_" + prearrival_id).addClass('hide');
+        }
+    });
+});
+
+$(document).on('click', '.thirdlevel_dispaly', function() {
+    var thirdid = $(this).attr('thirdid');
+    var display = $(this).attr('display');
+    if (display == "0") {
+        $("#third_" + thirdid).show();
+        $("#edit_position_" + thirdid).attr('display', 1);
+    } else {
+        $("#third_" + thirdid).hide();
+        $("#edit_position_" + thirdid).attr('display', 0);
+    }
+});
+
+/* groupinfo modal box open*/
+$(document).ajaxComplete(function() {
+    $(".groupclass").unbind('change').bind('change', function() {
+        var group = $(this).val();
+        var id = $(this).attr("gid");
+        if (group == '0') {
+            $('#groupInfoModal').modal('toggle');
+            $("#groupinfoid").val(id);
+        }
+    });
+});
+
+/* positioninfo modal box open*/
+$(document).ajaxComplete(function() {
+    $(".positionclass").unbind('change').bind('change', function() {
+        var group = $(this).val();
+        var pid = $(this).attr("id");
+        if (group == '0') {
+            $('#addpositionModal').modal('toggle');
+            $("#positioninfoid").val(pid);
+        }
+    });
+});
+
+/* collection info modal box open*/
+$(document).ajaxComplete(function() {
+    $(".collectionclass").unbind('change').bind('change', function() {
+        var group = $(this).val();
+        var cid = $(this).attr("cid");
+        if (group == '0') {
+            $('#addcollectionModal').modal('toggle');
+            $("#collectioninfoid").val(cid);
+        }
+    });
+});
+
+/* location info modal box open*/
+$(document).ajaxComplete(function() {
+    $(".locationclass").unbind('change').bind('change', function() {
+        var id = $(this).attr("lid");
+        var group = $(this).val();
+        if (group == '0') {
+            $('#addlocationModal').modal('toggle');
+            $("#locationid").val(id);
+        }
+    });
+});
+
+/* add location entry */
+
+$(document).ready(function() {
+    $('#location_info_submit').click(function() {
+        var check = true;
+        if ($("#location_name").val() == '') {
+            check = false;
+            BootstrapDialog.alert('please enter new location name');
+        }
+
+        var id = $("#locationid").val();
+        var location_id_display = $('#location_id_' + id);
+        var formArray = $("#locationform").serialize();
+        if (check) {
+            $.ajax({
+                type: "post",
+                url: '/location/addentry',
+                data: formArray,
+                success: function(response) {
+                    if (response.result == "true") {
+                        location_id_display.append("<option value='" + response.id + "'>" + $("#location_name").val() + "</option>");
+                        $("#locationform").get(0).reset();
+                        $('#addlocationModal').modal('toggle');
+                        BootstrapDialog.alert('successfully added location info');
+                    } else {
+                        BootstrapDialog.alert('please try again some time');
+                    }
+                }
+            });
+        }
+    });
+});
+/* end here */
+
+/* add grouping entry */
+$(document).ready(function() {
+    $('#addgroup_info_submit').click(function() {
+        var check = true;
+        if ($("#group_name").val() == '') {
+            check = false;
+            BootstrapDialog.alert('please enter new group name');
+        }
+        var id = $("#groupinfoid").val();
+        var group_id_display = $('#groupid_' + id);
+        var formArray = $("#groupingform").serialize();
+        if (check) {
+            $.ajax({
+                type: "post",
+                url: '/grouping/addentry',
+                data: formArray,
+                success: function(response) {
+                    if (response.result == "true") {
+                        group_id_display.append("<option value='" + response.id + "'>" + $("#group_name").val() + "</option>");
+                        $("#groupingform").get(0).reset();
+                        $('#groupInfoModal').modal('toggle');
+                        BootstrapDialog.alert('successfully added grouping info');
+                    } else {
+                        BootstrapDialog.alert('please try again some time');
+                    }
+                }
+            });
+        }
+    });
+});
+/* end here */
+
+/* add collection entry */
+$(document).ready(function() {
+    $('#collection_info_submit').click(function() {
+        var check = true;
+        if ($("#collection_name").val() == '') {
+            check = false;
+            BootstrapDialog.alert('please enter new collection name');
+        }
+
+        var id = $("#collectioninfoid").val();
+        var collection_id_display = $('#collection_id_' + id);
+        var formArray = $("#collectionform").serialize();
+        if (check) {
+            $.ajax({
+                type: "post",
+                url: '/collection/addentry',
+                data: formArray,
+                success: function(response) {
+                    if (response.result == "true") {
+                        collection_id_display.append("<option value='" + response.id + "'>" + $("#collection_name").val() + "</option>");
+                        $("#collectionform").get(0).reset();
+                        $('#addcollectionModal').modal('toggle');
+                        BootstrapDialog.alert('successfully added collection info');
+                    } else {
+                        BootstrapDialog.alert('please try again some time');
+                    }
+                }
+            });
+        }
+    });
+});
+/* end here */
+
+/* add position entry */
+$(document).ready(function() {
+    $('#addposition_info_submit').click(function() {
+        var check = true;
+        if ($("#position_name").val() == '') {
+            check = false;
+            BootstrapDialog.alert('please enter new position name');
+        }
+
+        var position_id_display_getid = $("#positioninfoid").val();
+        var position_id_display = $("#" + position_id_display_getid);
+        var formArray = $("#positionform").serialize();
+        if (check) {
+            $.ajax({
+                type: "post",
+                url: '/position/addentry',
+                data: formArray,
+                success: function(response) {
+                    if (response.result == "true") {
+                        position_id_display.append("<option value='" + response.id + "'>" + $("#position_name").val() + "</option>");
+                        $("#positionform").get(0).reset();
+                        $('#addpositionModal').modal('toggle');
+                        BootstrapDialog.alert('successfully added position info');
+                    } else if (response.result == "false") {
+                        BootstrapDialog.alert('position name is already exists');
+                    }
+                    else if (response.result == "try-error") {
+                        BootstrapDialog.alert(response.message);
+                    }
+                    else {
+                        BootstrapDialog.alert('please try again some time');
+                    }
+                }
+            });
+        }
+    });
+});
+
+/* end here */
+
+/* case update*/
+$(document).on('click', '.generateCase', function() {
+    var id = $(this).attr('id');
+    $.ajax({
+        type: "post",
+        url: '/case/addentry',
+        success: function(response) {
+            if (response.result == "true") {
+                $("#caseid_" + id).val(response.id);
+                $("#hidcase").val(response.caseid);
+            }
+            else if (response.result == "try-error") {
+                BootstrapDialog.alert(response.message);
+            }
+        }
+    });
+});
+/* end here */
+/* view case details entry */
+
+$(document).on('click', '.viewcaselist', function() {
+    var id = $(this).attr('id');
+
+    $('#caseviewmodal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/case/viewlist',
+        data: {id: id},
+        success: function(response) {
+            if (response.result == "true") {
+                $("#viewcaseresults").html(response.html);
+                $("#hidviewId").val(id);
+            } else {
+                BootstrapDialog.alert('please try again some time');
+            }
+        }
+    });
+});
+
+/* end here */
+/* update via case viewlist*/
+
+function updateBySelectedCase(value, caseId) {
+    var id = $("#hidviewId").val();
+    $("#caseid_" + id).val(value);
+    $("#hidcase").val(caseId);
+    $('#caseviewmodal').modal('toggle');
+}
+
+/*end here*/
+
+/**********************************************************************************/
+/*Cellar Front Tabs functionality and searching functionality script here
+ * Author:Manish khilwani<manish.khilwani@gmail.com>
+ * 
+ */
+/**********************************************************************************/
+/*Standard view list*/
+$(document).on('click', '#standardview', function() {
+    var searchvalue = $("#searchvalue").val();
+    $.ajax({
+        type: "post",
+        data: {searchvalue: searchvalue},
+        url: '/mycellar/standardviewlist',
+        success: function(response) {
+            console.log(response);
+            if (response.result == 'true') {
+                $("#prearrival-result").html('');
+                $("#consumed-result").html('');
+                $("#marketplace-result").html('');
+                $('#valuation-result').html('');
+                $('#storage-result').html('');
+                $("#page-wrapper").html(response.html);
+                $('body table').last().dataTable({
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                });
+            } else {
+                BootstrapDialog.alert('please try again after some time');
+            }
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/*storageview  list*/
+$(document).on('click', '#storageview', function() {
+    $.ajax({
+        type: "post",
+        url: '/mycellar/storageviewlist',
+        success: function(response) {
+            console.log(response);
+            if (response.result == 'true') {
+                $("#page-wrapper").html('');
+                $("#prearrival-result").html('');
+                $("#consumed-result").html('');
+                $("#marketplace-result").html('');
+                $('#valuation-result').html('');
+                $('#storage-result').html(response.html);
+                $('body table').last().dataTable({
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                });
+            } else {
+                BootstrapDialog.alert('please try again after some time');
+            }
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/*valuationview  list*/
+$(document).on('click', '#valuationview', function() {
+    $.ajax({
+        type: "post",
+        url: '/mycellar/valuationviewlist',
+        success: function(response) {
+            console.log(response);
+            if (response.result == 'true') {
+                $("#page-wrapper").html('');
+                $("#storage-result").html('');
+                $("#prearrival-result").html('');
+                $("#consumed-result").html('');
+                $("#marketplace-result").html('');
+                $('#valuation-result').html(response.html);
+                $('body table').last().dataTable({
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                });
+            } else {
+                BootstrapDialog.alert('please try again after some time');
+            }
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/*prearrival view  list*/
+$(document).on('click', '#prearrivalview', function() {
+    $.ajax({
+        type: "post",
+        url: '/mycellar/prearrivalviewlist',
+        success: function(response) {
+            console.log(response);
+            if (response.result == 'true') {
+                $("#page-wrapper").html('');
+                $("#storage-result").html('');
+                $("#consumed-result").html('');
+                $("#marketplace-result").html('');
+                $('#valuation-result').html('');
+                $('#prearrival-result').html(response.html);
+                $('body table').last().dataTable({
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                });
+            } else {
+                BootstrapDialog.alert('please try again after some time');
+            }
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/*consumed  list*/
+$(document).on('click', '#consumedview', function() {
+    $.ajax({
+        type: "post",
+        url: '/mycellar/consumedviewlist',
+        success: function(response) {
+            console.log(response);
+            if (response.result == 'true') {
+                $("#page-wrapper").html('');
+                $("#storage-result").html('');
+                $("#marketplace-result").html('');
+                $('#valuation-result').html('');
+                $('#prearrival-result').html('');
+                $('#consumed-result').html(response.html);
+                $('body table').last().dataTable({
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                });
+            } else {
+                BootstrapDialog.alert('please try again after some time');
+            }
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/*market place  list*/
+$(document).on('click', '#marketplaceview', function() {
+    $.ajax({
+        type: "post",
+        url: '/mycellar/marketplaceviewlist',
+        success: function(response) {
+            console.log(response);
+            if (response.result == 'true') {
+                $("#page-wrapper").html('');
+                $("#storage-result").html('');
+                $("#consumed-result").html('');
+                $('#valuation-result').html('');
+                $('#prearrival-result').html('');
+                $('#marketplace-result').html(response.html);
+                $('body table').last().dataTable({
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                });
+            } else {
+                BootstrapDialog.alert('please try again after some time');
+            }
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/******************************************************************
+ *  Searching functionality for cellar module start here
+ *  Date:6-8-2014
+ *  Manish khilwani<manish.khilwani@gmail.com>
+ *
+ */
+/**********************************************************************/
+$(document).ajaxComplete(function() {
+    $('.selectpicker').selectpicker();
+});
+
+//common search value sends in community
+function callAjax(id, modes) {
+   //alert("value="+id);
+    if(id!=0) {
+        $('#ajax-search-modal').modal('toggle');
+        $.ajax({
+            type: "post",
+            url: '/mycellar/allsearchingmodalopen',
+            data: {id: id, modes: modes},
+            success: function (response) {
+                if (response.result == "true") {
+                    $("#ajax_search_list").html(response.html);
+                }
+                console.log(response);
+            },
+            error: function () {
+                console.log(response);
+            }
+        });
+    }
+}
+
+/*modal box validation for country*/
+$(document).on('click', '#reviewcountryfilter', function() {
+    if ($('.selects:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one country');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var CountryIDs = $(".selects:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarCountryAjax(CountryIDs, searchBy);
+    }
+});
+
+/* call country wise searching in mycellar */
+function CellarCountryAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchcountry', /* searching country result*/
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+}
+
+/* save filter modal open in cellarmodule */
+
+$(document).on('click', '#searchsavefilter', function() {
+    var search_key = $("#searchkey").val();
+    var search_val = $("#searchval").val();
+    var searchcount = $("#searchcount").val();
+    var searchBy = $("#searchBy").val();
+    $('#search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/savesearchform',
+        data: {searchkey: search_key, searchvaue: search_val, searchcount: searchcount, searchBy: searchBy},
+        success: function(response) {
+            $('#search_save_data').html(response.html);
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+
+});
+
+/* insert search in standard view task*/
+
+$(document).on('click', '#countrysubmit', function() {
+    var search_key = $("#hidsearchkey").val();
+    var search_val = $("#hidsearchval").val();
+    var searchname = $("#searchname").val();
+    var searchby = $("#hidsearchby").val();
+
+    if (searchname != '') {
+        $.ajax({
+            type: "post",
+            url: '/mycellarsavesaerch/SaveSearchValue',
+            data: {searchkey: search_key, searchvaue: search_val, searchname: searchname, searchby: searchby},
+            success: function(response) {
+                if (response.result == "true") {
+                    $("#err").html('');
+                    $('#search-modal').modal('toggle');
+                } else {
+                    BootstrapDialog.alert('searchname already exists in database or invalid');
+                }
+            },
+            error: function() {
+                console.log(response);
+            }
+        });
+    } else {
+        BootstrapDialog.alert('please enter search name');
+    }
+
+});
+
+/* my saved filter modal open */
+$(document).on('click', '#myfilter', function() {
+    var searchtype = $("#myfilter").attr("value");
+    $('#saved_search_data_modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellarsavesaerch/GetSaveSearchValue',
+        data: {searchType: searchtype},
+        success: function(response) {
+            $('#saved_search_data').html(response.html);
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+});
+
+/* delete functionality in saved search list in my cellar */
+
+$(document).on('click', '#mycellar_search_delete', function() {
+    var searchId = $(this).attr("searchId");
+    BootstrapDialog.confirm('Are you sure you want to delete this saved search?', function(result) {
+        if (result) {
+            $.ajax({
+                type: "post",
+                url: '/mycellarsavesaerch/DeleteSavedSearch',
+                data: {id: searchId},
+                success: function(response) {
+                    if (response.result == "true") {
+                        $('#remove_' + searchId).remove();
+                    }
+                },
+                error: function() {
+                    console.log(response);
+                }
+            });
+        }
+    });
+
+});
+
+/* saved search values searching in mycellar */
+$(document).on('click', '.review_tasting_note_seaching', function() {
+
+    var searchBy   = $(this).attr("searchBy");
+    var searchVal  = $(this).attr("searchVal");
+    var searchType = $(this).attr("searchType");
+
+    $('#saved_search_data_modal').modal('toggle');
+    $('#by-price').html('');
+    $('#services').html('');
+    $('#recent-reviews').html('');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/SavedSearchValueResults',
+        data: {searchBy: searchBy, searchVal: searchVal, searchType: searchType},
+        success: function(response) {
+
+        $('.selectpicker').selectpicker();
+        $("#prearrival-result").html('');
+        $("#consumed-result").html('');
+        $("#marketplace-result").html('');
+        $('#valuation-result').html('');
+        $('#storage-result').html('');
+        $("#page-wrapper").html('');
+        $("#" + response.displayopt).html(response.html);
+        $('body table').last().dataTable({
+          "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+        });
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+});
+
+/***
+ * state validation on search modal
+ */
+/*modal box validation for state*/
+$(document).on('click', '#regionfilter', function() {
+    if ($('.selected:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one region');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var StateIDs = $(".selected:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarStateAjax(StateIDs, searchBy);
+    }
+});
+
+/* call state wise searching in mycellar */
+function CellarStateAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchstate', /* searching state result*/
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+        //    console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+            console.log(response);
+        }
+    });
+}
+
+/***
+ * subregion validation on search modal
+ */
+/*modal box validation for subregion*/
+$(document).on('click', '#subregionfilter', function() {
+    if ($('.selected:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one sub region');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var StateIDs = $(".selected:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarSubRegionAjax(StateIDs, searchBy);
+    }
+
+});
+
+/* call subregion wise searching in mycellar */
+function CellarSubRegionAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchsubregion', /* searching state result*/
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            //console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+           // console.log(response);
+        }
+    });
+}
+
+/***
+ * color validation on search modal
+ */
+/*modal box validation for color*/
+$(document).on('click', '#colorfilter', function() {
+    if ($('.clr:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one wine color');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var colors = $(".clr:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarColorAjax(colors, searchBy);
+    }
+
+});
+
+/* call color wise searching in mycellar */
+function CellarColorAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchcolor', /* searching color result*/
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html();
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+        //    console.log(response);
+        }
+    });
+}
+
+/***
+ * year validation on search modal
+ */
+/*modal box validation for year*/
+$(document).on('click', '#yearfilter', function() {
+    if ($('.year:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one year for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var colors = $(".year:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarYearAjax(colors, searchBy);
+    }
+
+});
+
+/* call year wise searching in mycellar */
+function CellarYearAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchyear',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+        //    console.log(response);
+        }
+    });
+}
+
+/***
+ * varietalfilter validation on search modal
+ */
+/*modal box validation for year*/
+$(document).on('click', '#varietalfilter', function() {
+    if ($('.varietal:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one varietal for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var varietal = $(".varietal:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarVaritalAjax(varietal, searchBy);
+    }
+
+});
+
+/* call varietal wise searching in mycellar */
+function CellarVaritalAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchvarietal',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html();
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+        //    console.log(response);
+        }
+    });
+}
+
+/***
+ * winetype validation on search modal
+ */
+/*modal box validation for winetype*/
+$(document).on('click', '#winetypefilter', function() {
+    if ($('.winetype:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one winetype for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var winetype = $(".winetype:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarWineTypeAjax(winetype, searchBy);
+    }
+
+});
+
+/* call winetype wise searching in mycellar */
+function CellarWineTypeAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchwinetype',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html();
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+        //    console.log(response);
+        }
+    });
+}
+
+/***
+ * producer validation on search modal
+ */
+/*modal box validation for producer*/
+$(document).on('click', '#producerfilter', function() {
+    if ($('.producer:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one producer for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var producer = $(".producer:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarWineProducerAjax(producer, searchBy);
+    }
+
+});
+
+/* call producer wise searching in mycellar */
+function CellarWineProducerAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchwineproducer',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html();
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+        //    console.log(response);
+        }
+    });
+}
+
+
+/***
+ * locationfilter validation on search modal
+ */
+/*modal box validation for locationfilter*/
+$(document).on('click', '#locationfilter', function() {
+    if ($('.location:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one location for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var location = $(".location:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarWineLocationAjax(location, searchBy);
+    }
+
+});
+
+/* call location wise searching in mycellar */
+function CellarWineLocationAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchwinelocation',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+        //    console.log(response);
+        }
+    });
+}
+
+
+/***
+ * bottlesize validation on search modal
+ */
+/*modal box validation for bottlesize*/
+$(document).on('click', '#bottlesizefilter', function() {
+    if ($('.bottlesize:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one wine bottle size for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var location = $(".bottlesize:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarWineBottleSizeAjax(location, searchBy);
+    }
+
+});
+
+/* call bottlesize wise searching in mycellar */
+function CellarWineBottleSizeAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchwinebottlesize',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+          // console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+            //just for testing purpose
+          //  console.log(response);
+        }
+    });
+}
+
+/***
+ * grouping validation on search modal
+ */
+/*modal box validation for grouping*/
+$(document).on('click', '#groupidfilter', function() {
+    if ($('.groupid:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one grouping select for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var location = $(".groupid:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarWineGroupingAjax(location, searchBy);
+    }
+
+});
+
+/* call bottlesize wise searching in mycellar */
+function CellarWineGroupingAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchwinegrouping',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+            //just for testing purpose
+            //console.log(response);
+        }
+    });
+}
+
+
+/***
+ * collectionfilter validation on search modal
+ */
+/*modal box validation for collectionfilter*/
+$(document).on('click', '#collectionfilter', function() {
+    if ($('.collection:checked').length == 0) {
+        BootstrapDialog.alert('please select minimum one collection select for searching');
+    } else {
+        $("#err").html('');
+        var searchBy = $("#searchBy").val();
+        var location = $(".collection:checked").map(function() {
+            return $(this).val();
+        }).toArray();
+        CellarWineCollectionAjax(location, searchBy);
+    }
+
+});
+
+/* call bottlesize wise searching in mycellar */
+function CellarWineCollectionAjax(id, searchBy) {
+    $('#ajax-search-modal').modal('toggle');
+    $.ajax({
+        type: "post",
+        url: '/mycellar/searchwinecolection',
+        data: {id: id, searchBy: searchBy},
+        success: function(response) {
+            console.log(response);
+            $("#prearrival-result").html('');
+            $("#consumed-result").html('');
+            $("#marketplace-result").html('');
+            $('#valuation-result').html('');
+            $('#storage-result').html('');
+            $("#page-wrapper").html('');
+            $("#" + response.displayopt).html(response.html);
+            $('body table').last().dataTable({
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+            });
+        },
+        error: function() {
+            //just for testing purpose
+           // console.log(response);
+        }
+    });
+}
+
+
+/*
+ * Cellar product details in edit mode
+ * August 20th 2014
+ * Cellar product Selected Product Edit mode
+ * Manish khilwani<manish.khilwani@gmail.com>
+ * 
+ */
+$(".storeincase").change(function() {
+    var prearrival_id = $(this).attr("storeid");
+    if ($("#storeincase_" + prearrival_id).is(':checked')) {
+        $("#location_of_wines_" + prearrival_id).removeClass('hide');
+        $("#auction_purchase").val(1);
+    } else {
+        $("#location_of_wines_" + prearrival_id).addClass('hide');
+        $("#auction_purchase").val(0);
+    }
+});
+
+/* add location model open */
+$(".locationclass").unbind('change').bind('change', function() {
+    var id = $(this).attr("lid");
+    var group = $(this).val();
+    if (group == '0') {
+        $('#addlocationModal').modal('toggle');
+        $("#locationid").val(id);
+    }
+});
+
+/* add new group create modal open*/
+$(".groupclass").unbind('change').bind('change', function() {
+    var group = $(this).val();
+    var id = $(this).attr("gid");
+    if (group == '0') {
+        $('#groupInfoModal').modal('toggle');
+        $("#groupinfoid").val(id);
+    }
+});
+
+$(".collectionclass").unbind('change').bind('change', function() {
+    var group = $(this).val();
+    var cid = $(this).attr("cid");
+    if (group == '0') {
+        $('#addcollectionModal').modal('toggle');
+        $("#collectioninfoid").val(cid);
+    }
+});
+
+/* new eate position class here*/
+$(".positionclass").unbind('change').bind('change', function() {
+    var group = $(this).val();
+    var pid = $(this).attr("id");
+    if (group == '0') {
+        $('#addpositionModal').modal('toggle');
+        $("#positioninfoid").val(pid);
+    }
+});
+
+/* update form submit */
+$(document).ready(function() {
+    $("#updatebutton").click(function() {
+        var qty = $("#qty_0").val();
+        if (qty != '') {
+            if (qty <= 0) {
+                $("#qty_0").val('');
+                BootstrapDialog.alert('quantity must be above than 0');
+                return false;
+            }
+            else {
+                if($("#location_id_0").val()>0)
+                {
+                    $("#location_id_0").css('border-color','grey');
+                    var formArray = $("#editwinedetails").serialize();
+                    $.ajax({
+                        type: "post",
+                        url: '/mycellar/doProductUpdate',
+                        data: formArray,
+                        success: function (response) {
+                            if (response.result == "true") {
+                                window.location = '/mycellar/productdetails/' + response.id + '/' + response.title;
+                            }
+                        },
+                        error: function () {
+                            //just for testing purpose
+                            // console.log(response);
+                        }
+                    });
+                } else{
+                    $("#location_id_0").css('border-color','red');
+                }
+            }
+        } else {
+            BootstrapDialog.alert('please enter quantity');
+        }
+    });
+});
+
+/***
+ * MyCellar  list product edit on purchaseinfo page validation
+ * Date:21th August 2014
+ * Manish khilwani <manish.khilwani@gmail.com>
+ */
+
+/* add new group create modal open*/
+$(document).ready(function() {
+    $("#purchase_source_dp").unbind('change').bind('change', function() {
+        var createnew = $(this).val();
+
+        if (createnew == 'createnew') {
+            $("#newsouces").removeClass("hide");
+        } else {
+            $("#newsouces").addClass("hide");
+        }
+    });
+});
+
+/*shipping filed validation*/
+$('#shipping').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+
+/* cost per bottle price */
+$('#bottlecost').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+/* quantity validation */
+$("#qty").keypress(function(e) {
+    //if the letter is not digit then display error and don't type anything
+    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        //display error message
+        $("#errmsg").html("Digits Only").show().fadeOut("slow");
+        return false;
+    }
+});
+
+/* lotnumber validation */
+$("#lotnoid").keypress(function(e) {
+    //if the letter is not digit then display error and don't type anything
+    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        //display error message
+        return false;
+    }
+});
+
+/* premium validation */
+$('#premium').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+
+
+/* total cost count in cellar edit purchase info via Qty blur*/
+$("#qty").blur(function(e) {
+    var qty = parseInt($(this).val());
+
+    var productCost = $("#bottlecost").val();
+    var tax = $("#tax").val();
+    var shipping = $("#shipping").val();
+    var perBottleTax = tax / 100;
+    var TotalTax = perBottleTax * qty;
+    var totalShipping = qty * shipping;
+    var totalAdditionCost = TotalTax + totalShipping;
+    var Totalcost = qty * productCost + TotalTax + totalShipping;
+
+    $("#totalcostdisplay").html(Totalcost.toFixed(2));
+    $("#totalcost").val(Totalcost.toFixed(2));
+    $("#taxbtl").val(perBottleTax.toFixed(2));
+    $("#taxbtldisplay").html(perBottleTax.toFixed(2));
+    $("#additional_cost").val(totalAdditionCost.toFixed(2));
+    $("#additional_cost_display").html(totalAdditionCost.toFixed(2));
+});
+
+
+/* total cost count in cellar edit purchase info via cost blur*/
+$("#bottlecost").blur(function(e) {
+    var productCost = $(this).val();
+
+    var qty = parseInt($("#qty").val());
+    var tax = $("#tax").val();
+    var shipping = $("#shipping").val();
+    var perBottleTax = tax / 100;
+    var TotalTax = perBottleTax * qty;
+    var totalShipping = qty * shipping;
+    var totalAdditionCost = TotalTax + totalShipping;
+    var Totalcost = qty * productCost + TotalTax + totalShipping;
+
+    $("#totalcostdisplay").html(Totalcost.toFixed(2));
+    $("#totalcost").val(Totalcost.toFixed(2));
+    $("#taxbtl").val(perBottleTax.toFixed(2));
+    $("#taxbtldisplay").html(perBottleTax.toFixed(2));
+    $("#additional_cost").val(totalAdditionCost.toFixed(2));
+    $("#additional_cost_display").html(totalAdditionCost.toFixed(2));
+});
+
+
+/* total cost count in cellar edit purchase info via tax blur*/
+$("#tax").blur(function(e) {
+    var tax = $(this).val();
+
+    var qty = parseInt($("#qty").val());
+    var productCost = $("#bottlecost").val();
+    var shipping = $("#shipping").val();
+    var perBottleTax = tax / 100;
+    var TotalTax = perBottleTax * qty;
+    var totalShipping = qty * shipping;
+    var totalAdditionCost = TotalTax + totalShipping;
+    var Totalcost = qty * productCost + TotalTax + totalShipping;
+
+    $("#totalcostdisplay").html(Totalcost.toFixed(2));
+    $("#totalcost").val(Totalcost.toFixed(2));
+    $("#taxbtl").val(perBottleTax.toFixed(2));
+    $("#taxbtldisplay").html(perBottleTax.toFixed(2));
+    $("#additional_cost").val(totalAdditionCost.toFixed(2));
+    $("#additional_cost_display").html(totalAdditionCost.toFixed(2));
+});
+
+
+/* total cost count in cellar edit purchase info via shipping blur*/
+$("#shipping").blur(function(e) {
+    var shipping = $(this).val();
+
+    var qty = parseInt($("#qty").val());
+    var productCost = $("#bottlecost").val();
+    var tax = $("#tax").val();
+    var perBottleTax = tax / 100;
+    var TotalTax = perBottleTax * qty;
+    var totalShipping = qty * shipping;
+    var totalAdditionCost = TotalTax + totalShipping;
+    var Totalcost = qty * productCost + TotalTax + totalShipping;
+
+    $("#totalcostdisplay").html(Totalcost.toFixed(2));
+    $("#totalcost").val(Totalcost.toFixed(2));
+    $("#taxbtl").val(perBottleTax.toFixed(2));
+    $("#taxbtldisplay").html(perBottleTax.toFixed(2));
+    $("#additional_cost").val(totalAdditionCost.toFixed(2));
+    $("#additional_cost_display").html(totalAdditionCost.toFixed(2));
+
+});
+
+/* estimate value validation */
+$('#estimate_value').keypress(function(event) {
+    if (event.which == 8 || event.which == 0) {
+        return true;
+    }
+    if (event.which < 46 || event.which > 59) {
+        return false;
+    }
+    if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+});
+
+$(document).ready(function() {
+    $("#purchaseinfoupdatebutton").click(function() {
+        var error = null;
+        if (parseInt($("#qty").val()) == "" || parseInt($("#qty").val()) <= 0) {
+            BootstrapDialog.alert('please enter product quantity');
+            return false;
+        }
+        if ($("#bottlecost").val() == "") {
+            BootstrapDialog.alert('please enter price');
+            return false;
+        }
+        var formArray = $("#editpurchaseinfo").serialize();
+        //alert("formarray"+formarray);
+        $.ajax({
+            type: "post",
+            url: '/mycellar/updatepurchaseinfo',
+            data: formArray,
+            success: function(response) {
+                if (response.result == "true") {
+                    window.location = '/mycellar/productdetails/' + response.pid + '/' + response.title;
+                }
+            },
+            error: function() {
+                //just for testing purpose
+                //console.log(response);
+            }
+        });
+
+    });
+});
+
+
+/*
+ * Print Related validation related function
+ * Date:28th August 2014
+ * Author: Manish khilwani <manish.khilwani@gmail.com>
+ * */
+$(document).ready(function() {
+    $("#print").click(function() {
+        $("#print-form-modal").modal('toggle');
+        $.ajax({
+            type: "post",
+            url: '/print/openprintform',
+            success: function(response) {
+                console.log(response);
+                $("#print_form_open").html(response.html);
+            },
+            error: function() {
+                //just for testing purpose
+               // console.log(response);
+            }
+        });
+    });
+});
+
+/* checkbox validation in listing products time next button disable and enable*/
+$(document).ajaxComplete(function() {
+    $(".printOutType").change(function() {
+        var producttypevalue = $(this).val();
+        if (producttypevalue == "Resturant") {
+            $("#sprice").removeClass('hide');
+            $("#score").removeClass('hide');
+            $("#lblimage").removeClass('hide');
+            $("#selectbasicoption").addClass('hide');
+        }
+        else {
+            $("#showprice").prop('checked', false);
+            $("#sprice").addClass('hide');
+            $("#score").addClass('hide');
+            $("#lblimage").addClass('hide');
+            $("#selectbasicoption").removeClass('hide');
+        }
+    });
+    /* Back page return function*/
+    function goBack() {
+        window.history.back();
+    }
+});
+
+
+/*
+ * Bulk Edit validation related function
+ * Date:5th September 2014
+ * Author: Manish khilwani <manish.khilwani@gmail.com>
+ * */
+$(document).ready(function() {
+    $("#bulk_edit").click(function() {
+        //$("#print-form-modal").modal('toggle');
+        $.ajax({
+            type: "post",
+            url: '/print/openprintform',
+            success: function(response) {
+                //just for testing purpose
+                //console.log(response);
+                $("#print_form_open").html(response.html);
+            },
+            error: function() {
+                //just for testing purpose
+                //console.log(response);
+            }
+        });
+    });
+});
+
+/*
+ * Export Related validation related function
+ * Date:5th September 2014
+ * Author: Manish khilwani <manish.khilwani@gmail.com>
+ * */
+$(document).ready(function() {
+    $("#export").click(function() {
+        $("#export-form-modal").modal('toggle');
+        $.ajax({
+            type: "post",
+            url: '/export/openexportmodalform',
+            success: function(response) {
+                console.log(response);
+                $("#export_form_open").html(response.html);
+            },
+            error: function() {
+                console.log(response);
+            }
+        });
+    });
+});
+
+/* all checkbox select validation */
+$(document).ajaxComplete(function() {
+    // add multiple select / deselect functionality
+    $("#alloption").click(function() {
+        $('.case').prop('checked', this.checked);
+    });
+
+    // if all checkbox are selected, check the selectall checkbox
+    // and viceversa
+    $(".case").click(function() {
+
+        if ($(".case").length == $(".case:checked").length) {
+            $("#alloption").prop('checked', true);
+        } else {
+            $("#alloption").prop('checked', false);
+        }
+
+    });
+});
+
+/* quanity check on selected p[roduct quanity page*/
+$(document).ready(function() {
+    $(".Quantity").keypress(function(e) {
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    });
+    //position value validation
+    $(".positionvalue").keypress(function(e) {
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    });
+});
+
+
+/*end here*/
+
+/* bulk edit form validation  in future needed
+ $(document).ready(function() {
+ $('#bulkeditform').validate({// initialize plugin within DOM ready
+ // other options,
+ rules: {
+ 'price[]': {
+ required: true
+ }
+ }
+ });
+ 
+ });*/
+
+
+
+/***
+ *  Twitter Post Functionality related function
+ *  Date 25th Sept 2014
+ */
+$(document).on('click', '.twitter_posting', function() {
+    var id = $(this).attr('id');
+    if (this.checked) {
+        $.ajax({
+            type: "get",
+            cache: false,
+            url: '/posttweet',
+            /*data: {id: id, tn: 'tn'},*/
+            success: function(response) {
+                if (response.result == "true") {
+                    //Add to current
+                } else {
+                    BootstrapDialog.confirm('Please popup Unblock for this website!!', function(result) {
+                        if (result) {
+                            var objwnd = window.open(response.url, "_blank", "width=750,height=170,0,status=0,scrollbars=1");
+                        } else {
+                            $('#' + id).prop('checked', false);
+                        }
+                    });
+                }
+            }
+        });
+    }
+});
+
+
+/***
+ *  Facebook Post Functionality related function
+ *  Date 29th Sept 2014
+ */
+$(document).on('click', '.facebook_posting', function() {
+    var id = $(this).attr('id');
+    if (this.checked) {
+        $.ajax({
+            type: "post",
+            cache: false,
+            url: '/fblogincheck',
+            /*data: {id: id, tn: 'tn'},*/
+            success: function(response) {
+                if (response.result == "true") {
+                    //Add to current
+                } else {
+                    BootstrapDialog.confirm('Please popup Unblock for this website!!', function(result) {
+                        if (result) {
+                            var objwnd = window.open(response.url, "_blank", "width=750,height=170,0,status=0,scrollbars=1");
+                        } else {
+                            $('#' + id).prop('checked', false);
+                        }
+                    });
+                }
+            }
+        });
+    }
+});
+
+/***
+ *  Twitter Post Functionality related function
+ *  Date 2nd October 2014
+ */var twPrdId = 0;
+$(document).on('click', '.twitter_posting_mycellar', function() {
+    var id = $(this).attr('id');  
+    twPrdId = id;
+    $.ajax({
+        type: "get",
+        cache: false,
+        url: '/posttweet',
+        /*data: {id: id, tn: 'tn'},*/
+        success: function(response) {
+            if (response.result == "true") {
+                TweetProduct();
+                //Add to current
+            } else {
+                BootstrapDialog.confirm('Please popup Unblock for this website!!', function(result) {
+                    if (result) {
+                        var objwnd = window.open(response.url + "?productId=" + twPrdId, "_blank", "width=750,height=170,0,status=0,scrollbars=1");
+                    }
+                });
+            }
+        }
+    });
+});
+
+/***
+ * Tweet after window close
+ */
+function TweetProduct()
+{
+    $.ajax({
+        type: "POST",
+        cache: false,
+        url: '/twitterpostmycellar',
+        data: {id: twPrdId},
+        success: function(response) {
+            if (response.result == "true") {
+               BootstrapDialog.alert('successfully tweet');   
+            } else {
+              BootstrapDialog.alert('please try again after some time'); 
+            }
+        }
+    });
+}

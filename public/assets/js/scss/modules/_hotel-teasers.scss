@@ -1,0 +1,34 @@
+.hotel-teasers {margin: 0 -10px 35px; padding: 0; overflow: hidden; background: #fff; font-size: 0; text-align: center;
+	.hotel-teaser {max-width: 410px; overflow: hidden; margin: 0 auto; background: #fff; font-size: 20px; font-weight: 600;
+		span {display: block; position: relative; top: 0; z-index: 2; margin: 0; padding: 25px 0; background: #fff; color: $navy; transition: $def_transition;}
+		span:before, span:after {display: block; position: absolute; top: 100%; left: 50%; width: 0; height: 0; border-style: solid; border-width: 8px; content: " "; transition: $def_transition;}
+		span:before {margin-left: -16px; border-color: #fff #fff transparent transparent;}
+		span:after {margin-right: -16px; border-color: #fff transparent transparent #fff;}
+		img {display: block; max-width: 100%; opacity: 1; transition: $def_transition;}
+		a:hover {
+			span {top: 10px; background: $orange; color: #fff;}
+			span:before {margin-left: -16px; border-color: $orange $orange transparent transparent;}
+			span:after {margin-right: -16px; border-color: $orange transparent transparent $orange;}
+			img {opacity: 0.75;}
+		}
+	}
+}
+
+@media (min-width: 600px) {
+	.hotel-teasers {
+		.hotel-teaser {display: inline-block; vertical-align: bottom; width: 33%; padding-left: 1px; box-sizing: border-box; font-size: 15px;}	
+	}
+}
+
+@media (min-width: 1024px) {
+	.hotel-teasers {
+		.hotel-teaser {
+			font-size: 20px;
+		}
+	}
+}
+
+@media (min-width: 1230px) {
+	.hotel-teasers {margin: 0 0 35px; background: transparent;}
+	.hotel-teasers:before {display: block; position: relative; z-index: 0; width: 100%; margin-bottom: -71px; height: 71px; background: #fff; content: " ";}
+}
